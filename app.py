@@ -17,31 +17,35 @@ alunos = [{
 class Aluno(Resource):
     def get(self, id):
         try:
-            response = alunos[id]
+            response = alunos[id], 200
         except IndexError:
-            response = {'status': 'erro', 'mensagem': 'Aluno de id {} não foi encontaro'.format(id)}
+            response = {'status': 'erro', 'mensagem': 'Aluno de id {} não foi encontrado'.format(id)}, 204
         return response
 
     def put(self, id):
-        dados = json.loads(request.data)
-        alunos[id] = dados
-        return dados
+        try:
+            dados = json.loads(request.data)
+            alunos[id] = dados
+            mensagem = dados, 200
+        except IndexError:
+            mensagem = {'status': 'erro', 'mensagem': 'Aluno de id {} não foi encontrado'.format(id)}, 204
+        return mensagem
 
     def delete(self, id):
         alunos.pop(id)
-        return {'status': 'sucesso', 'menssagem': 'aluno de id {} excluido com sucesso'.format(id)}
+        return {'status': 'sucesso', 'menssagem': 'aluno de id {} excluido com sucesso'.format(id)}, 200
 
 
 class ListaAlunos(Resource):
     def get(self):
-        return {'alunos': alunos}
+        return {'alunos': alunos}, 200
 
     def post(self):
         dados = json.loads(request.data)
         posicao = len(alunos)
         dados['id'] = posicao
         alunos.append(dados)
-        return alunos[posicao]
+        return alunos[posicao], 200
 
 
 api.add_resource(Aluno, '/aluno/<int:id>')
